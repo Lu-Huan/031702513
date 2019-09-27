@@ -1,6 +1,6 @@
 #include <fstream>
 #include <iostream>
-#include<string>
+#include <string>
 #include <sstream>
 #include <windows.h>
 #include"include/json/json.h"
@@ -12,15 +12,17 @@ using namespace std;
 string provinces[31];
 const string Municipality[] = { "北京","上海","天津","重庆" };
 const string AutonomousRegion[] = { "内蒙","广西","西藏","宁夏" ,"新疆" };
-string list;
-const char *analysis;
-int index = 0;
+
 
 //全国地图数据分割为两个JsonValue存储
 //使用全局的Value，程序退出时会错
 //原因：析构函数出错,修改源码重新编译没问题
 Json::Value pcas0;
 Json::Value pcas1;
+
+string list;
+const char *analysis;
+int index = 0;
 //判断是否是数字 
 bool IsNum(const char *te)
 {
@@ -72,7 +74,7 @@ string GetPhone()
 			num = 0;
 		}
 	}
-	return nullptr;
+	return "";
 }
 Json::Value GetAddress(int mode)
 {
