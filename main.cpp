@@ -11,6 +11,7 @@ using namespace std;
 
 string provinces[31];
 const string Municipality[] = { "北京","上海","天津","重庆" };
+const string AutonomousRegion[] = { "内蒙","广西","西藏","宁夏" ,"新疆" };
 string list;
 const char *analysis;
 int index = 0;
@@ -108,16 +109,36 @@ Json::Value GetAddress(int mode)
 	}
 	else
 	{
-		if (list.substr(index, 2) == "江" || list.substr(index, 2) == "古")
+		if (list.substr(index, 2) == "江")
 		{
 			provinces = name + list.substr(index, 2) + "省";
-			Address.append(name + list.substr(index, 2) + "省");
+			//Address.append(name + list.substr(index, 2) + "省");
 			index += 2;
 		}
 		else
 		{
-			provinces = name + "省";
-			Address.append(name + "省");
+			bool IsAutonomous = false;
+			for (size_t i = 0; i < 5; i++)
+			{
+				if (name == AutonomousRegion[i])
+				{
+					IsAutonomous = true;
+					int autonomous_end = index + 4;
+					while (list.substr(autonomous_end, 2) != "区")
+					{
+						autonomous_end += 2;
+					}
+					autonomous_end += 2;
+					provinces = list.substr(index - 4, autonomous_end - index + 4);
+					index = autonomous_end;
+					//cout << provinces << endl;
+				}
+			}
+			if (!IsAutonomous)
+			{
+				provinces = name + "省";
+				//Address.append(name + "省");
+			}
 		}
 		if (list.substr(index, 2) == "省")
 		{
@@ -128,10 +149,12 @@ Json::Value GetAddress(int mode)
 		if (pcas0.isMember(provinces))
 		{
 			city_list = pcas0[provinces];
+			Address.append(provinces);
 		}
 		else if (pcas1.isMember(provinces))
 		{
 			city_list = pcas1[provinces];
+			Address.append(provinces);
 		}
 		else
 		{
@@ -229,24 +252,24 @@ Json::Value GetAddress(int mode)
 			break;
 		}
 	}
-	
+
 	if (mode == 1)
 	{
 		//5级地址分割已完成
-		string ds = list.substr(index, list.length()-index-1);//去掉句号
+		string ds = list.substr(index, list.length() - index - 1);//去掉句号
 		//cout << ds << endl;
 		Address.append(ds);
 	}
 	else if (mode == 2)
 	{
 		//7级地址分割
-		int num=index;
-		
+		int num = index;
+
 		//寻找号码
-		while (!IsNum(analysis+num))
+		while (!IsNum(analysis + num))
 		{
 			num++;
-			if (num==list.length())
+			if (num == list.length())
 			{
 				Address.append(list.substr(index, list.length() - index - 1));
 				return Address;
@@ -260,8 +283,8 @@ Json::Value GetAddress(int mode)
 		}
 		word_hao += 2;
 		string Lfive = list.substr(index, num - index);
-		string Lsix= list.substr(num, word_hao - num);
-		string Lseven= list.substr(word_hao, list.length() - word_hao - 1);
+		string Lsix = list.substr(num, word_hao - num);
+		string Lseven = list.substr(word_hao, list.length() - word_hao - 1);
 		Address.append(Lfive);
 		Address.append(Lsix);
 		Address.append(Lseven);
@@ -274,7 +297,7 @@ void ReadMapOfChina()
 	stringstream  dastr0;
 	stringstream  dastr1;
 	string ds;
-	ifstream is0("C:\\Users\\Administrator\\Desktop\\addressbook\\addressbook\\pcas0.json");
+	ifstream is0("pcas0.json");
 	if (!is0.is_open())		cout << "无法读取文件pcas0.json" << endl;
 	dastr0 << is0.rdbuf();
 	ds = dastr0.str();
@@ -282,7 +305,7 @@ void ReadMapOfChina()
 	is0.close();
 	dastr0.clear();
 
-	ifstream is1("C:\\Users\\Administrator\\Desktop\\addressbook\\addressbook\\pcas1.json");
+	ifstream is1("pcas1.json");
 	if (!is1.is_open())		cout << "无法读取文件pcas1.json" << endl;
 	dastr1 << is1.rdbuf();
 	ds = dastr1.str();
@@ -326,12 +349,13 @@ string Utf8ToGbk(const char *src_str)
 	return strTemp;
 }
 
-
+string inf = "in.txt"; string outf = "out.json";
 int main(int argc, char** argv)
 {
 	ReadMapOfChina();
 	Json::Value root;
-	ifstream infile(argv[1]);
+	//ifstream infile(argv[1]);
+	ifstream infile(inf);
 
 	bool frist_list = true;
 	while (infile >> list)
@@ -342,7 +366,7 @@ int main(int argc, char** argv)
 			list.erase(0, 1);
 			frist_list = false;
 		}
-		
+
 		//cout << list << endl;
 		Json::Value a_list;
 
@@ -355,10 +379,10 @@ int main(int argc, char** argv)
 		a_list["地址"] = GetAddress(mode);
 		root.append(a_list);
 	}
-
 	infile.close();
-	ofstream out(argv[2]);
-	string re= root.toStyledString();
+	//ofstream out(argv[2]);
+	ofstream out(outf);
+	string re = root.toStyledString();
 	re = GbkToUtf8(re.data());
 	out << re;
 	out.close();
