@@ -354,8 +354,8 @@ int main(int argc, char** argv)
 {
 	ReadMapOfChina();
 	Json::Value root;
-	//ifstream infile(argv[1]);
-	ifstream infile(inf);
+	ifstream infile(argv[1]);
+	//ifstream infile(inf);
 
 	bool frist_list = true;
 	while (infile >> list)
@@ -380,8 +380,8 @@ int main(int argc, char** argv)
 		root.append(a_list);
 	}
 	infile.close();
-	//ofstream out(argv[2]);
-	ofstream out(outf);
+	ofstream out(argv[2]);
+	//ofstream out(outf);
 	string re = root.toStyledString();
 	re = GbkToUtf8(re.data());
 	out << re;
