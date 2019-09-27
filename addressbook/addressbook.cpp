@@ -234,7 +234,7 @@ Json::Value GetAddress(int mode)
 	{
 		//5级地址分割已完成
 		string ds = list.substr(index, list.length()-index-1);//去掉句号
-		cout << ds << endl;
+		//cout << ds << endl;
 		Address.append(ds);
 	}
 	else if (mode == 2)
@@ -343,7 +343,7 @@ int main(int argc, char** argv)
 			frist_list = false;
 		}
 		
-		cout << list << endl;
+		//cout << list << endl;
 		Json::Value a_list;
 
 		analysis = list.data();
@@ -358,7 +358,9 @@ int main(int argc, char** argv)
 
 	infile.close();
 	ofstream out(argv[2]);
-	out << root.toStyledString();
+	string re= root.toStyledString();
+	re = GbkToUtf8(re.data());
+	out << re;
 	out.close();
 	return 0;
 }
