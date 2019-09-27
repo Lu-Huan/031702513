@@ -354,6 +354,10 @@ string Utf8ToGbk(const char *src_str)
 string inf = "in.txt"; string outf = "out.json";
 int main(int argc, char** argv)
 {
+	if (argc<2)
+	{
+		return 0;
+	}
 	ReadMapOfChina();
 	Json::Value root;
 	ifstream infile(argv[1]);
