@@ -1,0 +1,6 @@
+[Dd]ebug/
+[Rr]elease/
+[Xx]64/
+
+# Visual Studio cache directory
+.vs/
